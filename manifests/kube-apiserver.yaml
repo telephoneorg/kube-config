@@ -37,7 +37,7 @@ spec:
     - --service-account-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
     - --service-account-lookup
     - --service-node-port-range=50-65000
-    - --runtime-config=apps/v1beta2,autoscaling/v2beta1
+    # - --runtime-config=apps/v1beta2,autoscaling/v2beta1
     - --enable-garbage-collector=true
     - --feature-gates=AllAlpha=true,CustomResourceValidation=true,APIResponseCompression=false
     - --anonymous-auth=false
