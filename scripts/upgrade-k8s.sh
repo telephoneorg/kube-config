@@ -37,7 +37,7 @@ sleep 5
 
 
 echo "Upgrading kubectl ..."
-curl -sSLO https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
+curl -sSLO "https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl"
 chmod +x kubectl
 mv kubectl /usr/local/bin
 
@@ -62,6 +62,7 @@ echo "Re-enabling kubelet ..."
 systemctl enable kubelet
 systemctl start kubelet
 
+kubectl uncordon $(hostname -f)
 
 echo -e "
 *******
