@@ -1,0 +1,81 @@
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/kubernetes/kubernetes
+Wants=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/kubernetes/kubelet.env
+Environment="RKT_RUN_ARGS=--volume=resolv,kind=host,source=/etc/resolv.conf \
+  --mount volume=resolv,target=/etc/resolv.conf \
+  --volume modprobe,kind=host,source=/sbin/modprobe \
+  --mount volume=modprobe,target=/usr/sbin/modprobe \
+  --volume lib-modules,kind=host,source=/lib/modules \
+  --mount volume=lib-modules,target=/lib/modules \
+  --volume opt-cni-bin,kind=host,source=/opt/cni/bin,readOnly=false \
+  --mount volume=opt-cni-bin,target=/opt/cni/bin \
+  --volume etc-cni-net-d,kind=host,source=/etc/cni/net.d,readOnly=false \
+  --mount volume=etc-cni-net-d,target=/etc/cni/net.d \
+  --volume ssl-etcd,kind=host,source=/etc/ssl/etcd,readOnly=true \
+  --mount volume=ssl-etcd,target=/etc/ssl/etcd \
+  --volume var-lib-etcd,kind=host,source=/var/lib/etcd,readOnly=false \
+  --mount volume=var-lib-etcd,target=/var/lib/etcd \
+  --volume var-lib-rook,kind=host,source=/var/lib/rook,readOnly=false \
+  --mount volume=var-lib-rook,target=/var/lib/rook \
+  --volume usr-libexec-kube,kind=host,source=/usr/libexec/kubernetes,readOnly=false \
+  --mount volume=usr-libexec-kube,target=/usr/libexec/kubernetes \
+  --uuid-file-save=/var/run/kubelet-pod.uuid"
+
+# NOTES ON FLAGS CURRENTLY IN USE #####
+#
+# authorization-mode=Webhook  |  Fixes the following fatal error: failed to run Kubelet: No authentication method configured
+# require-kubeconfig          |  Required for Kubelet to talk to API server under < 1.8.x
+
+#
+# --client-ca-file string     |  If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
+# --require-kubeconfig        |  After 1.8, remove as it is no longer needed
+ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+ExecStart=/usr/local/bin/kubelet-wrapper \
+    --anonymous-auth=false \
+    --authorization-mode=AlwaysAllow \
+    --authentication-token-webhook \
+    --kubeconfig=/etc/kubernetes/kube-config.yaml \
+    --require-kubeconfig=true \
+    --network-plugin=cni \
+    --feature-gates=AllAlpha=true,DynamicVolumeProvisioning=true \
+    --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem \
+    --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem \
+    --client-ca-file=/etc/kubernetes/ssl/ca/ca.pem \
+    --register-node \
+    --allow-privileged \
+    --pod-manifest-path=/etc/kubernetes/manifests \
+    --logtostderr \
+    --cluster-dns=172.17.100.10 \
+    --cluster-domain=cluster.local \
+    --v=0
+
+# NOTES ON FLAGS TAKEN OUT OF USE #####
+#
+# --authorization-mode=AlwaysAllow  |  Switch to this or RBAC after 1.8
+# --cgroups-per-qos=false           |  Under 1.8.4 uncomment the following two lines
+# --enforce-node-allocatable=""     |  If you get container runtime errors
+# --authentication-token-webhook    |  Commenting this out
+# --authorization-mode=Webhook
+
+
+
+ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
+
+Restart=on-failure
+RestartSec=10
+
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+
+CPUAccounting=yes
+MemoryAccounting=yes
+BlockIOAccounting=yes
+
+[Install]
+WantedBy=multi-user.target
