@@ -37,10 +37,8 @@ Environment="RKT_RUN_ARGS=--volume=resolv,kind=host,source=/etc/resolv.conf \
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 ExecStart=/usr/local/bin/kubelet-wrapper \
     --anonymous-auth=false \
-    --authorization-mode=AlwaysAllow \
-    --authentication-token-webhook \
+    --authorization-mode=RBAC,AlwaysAllow \
     --kubeconfig=/etc/kubernetes/kube-config.yaml \
-    --require-kubeconfig=true \
     --network-plugin=cni \
     --feature-gates=AllAlpha=true,DynamicVolumeProvisioning=true \
     --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem \

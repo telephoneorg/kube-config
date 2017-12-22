@@ -13,7 +13,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: gcr.io/google_containers/hyperkube:v1.7.8
+    image: gcr.io/google_containers/hyperkube:v1.8.5
     imagePullPolicy: Always
     command:
     - /hyperkube
@@ -25,7 +25,7 @@ spec:
     - --etcd-cafile=/etc/ssl/etcd/ca.pem
     - --allow-privileged=true
     - --service-cluster-ip-range=172.17.100.0/24
-    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota  # for 1.7: Removed SecurityContextDeny since it was breaking rook osd's daemonset
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,InitialResources,DefaultStorageClass,ResourceQuota  # for 1.7: Removed SecurityContextDeny since it was breaking rook osd's daemonset, for 1.8 removed PersistentVolumeLabel
     # - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota,SecurityContextDeny         # for 1.7
     # - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds  # for 1.8
     - --authorization-mode=AlwaysAllow,RBAC,Node
@@ -38,9 +38,9 @@ spec:
     - --service-account-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
     - --service-account-lookup
     - --service-node-port-range=50-65000
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true
+    - --runtime-config=apps/v1beta2,autoscaling/v2beta1
     - --enable-garbage-collector=true
-    - --feature-gates=AllAlpha=true
+    - --feature-gates=AllAlpha=true,CustomResourceValidation=true
     - --anonymous-auth=false
     - --v=0
     # - --authorization-mode=RBAC                                   # Comment out until 1.8.x
