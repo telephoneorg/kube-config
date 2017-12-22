@@ -20,15 +20,15 @@ Upgrading k8s to: $K8S_VERSION
 
 "
 
-echo "Draining node: $THIS_FQDN ..."
+echo "Draining node: $(hostname -f)..."
 kubectl drain $(hostname -f) --delete-local-data --ignore-daemonsets --force
-sleep 10
+sleep 5
 
 
 echo "Disabling and stopping kubelet ..."
 systemctl is-active kubelet && systemctl stop kubelet
 systemctl is-enabled kubelet && systemctl disable kubelet
-sleep 10
+sleep 1
 
 
 echo "Clearing old kubelet rkt container ..."

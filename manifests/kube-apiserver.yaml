@@ -39,11 +39,11 @@ spec:
     - --service-node-port-range=50-65000
     - --runtime-config=apps/v1beta2,autoscaling/v2beta1
     - --enable-garbage-collector=true
-    - --feature-gates=AllAlpha=true,CustomResourceValidation=true
+    - --feature-gates=AllAlpha=true,CustomResourceValidation=true,APIResponseCompression=false
     - --anonymous-auth=false
     - --v=0
     - --authorization-mode=RBAC                                   # Comment out until 1.8.x
-    # - --authorization-rbac-super-user=admin                       # Comment out until 1.8.x
+    - --authorization-rbac-super-user=admin                       # Comment out until 1.8.x
     # - --feature-gates=AllAlpha=true,APIResponseCompression=false  # 1.8.4 has an issue with websockets, exec, logs -f don't work unless you uncomment this
     ports:
     - name: https
