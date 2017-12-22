@@ -22,7 +22,7 @@ Upgrading k8s to: $K8S_VERSION
 
 echo "Draining node: $THIS_FQDN ..."
 kubectl drain $(hostname -f) --delete-local-data --ignore-daemonsets --force
-sleep 20
+sleep 10
 
 
 echo "Disabling and stopping kubelet ..."
@@ -33,7 +33,7 @@ sleep 10
 
 echo "Clearing old kubelet rkt container ..."
 rkt gc --grace-period=0
-sleep 15
+sleep 5
 
 
 echo "Upgrading kubectl ..."
@@ -49,10 +49,13 @@ mv kubelet-wrapper /usr/local/bin
 
 
 echo "Checking out kube-config v${K8S_VERSION} ..."
-git fetch
-git checkout v${K8S_VERSION}
+cd /etc/kubernetes
+
+# git fetch
+# git checkout v${K8S_VERSION}
+git pull origin master
 systemctl daemon-reload
-sleep 5
+sleep 1
 
 
 echo "Re-enabling kubelet ..."
