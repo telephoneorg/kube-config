@@ -25,10 +25,9 @@ spec:
     - --etcd-cafile=/etc/ssl/etcd/ca.pem
     - --allow-privileged=true
     - --service-cluster-ip-range=172.17.100.0/24
-    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,InitialResources,DefaultStorageClass,ResourceQuota  # for 1.7: Removed SecurityContextDeny since it was breaking rook osd's daemonset, for 1.8 removed PersistentVolumeLabel
+    # - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,InitialResources,DefaultStorageClass,ResourceQuota  # for 1.7: Removed SecurityContextDeny since it was breaking rook osd's daemonset, for 1.8 removed PersistentVolumeLabel
     # - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota,SecurityContextDeny         # for 1.7
-    # - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds  # for 1.8
-    - --authorization-mode=AlwaysAllow,RBAC,Node
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,InitialResources,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds  # for 1.8
     - --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
@@ -43,7 +42,7 @@ spec:
     - --feature-gates=AllAlpha=true,CustomResourceValidation=true
     - --anonymous-auth=false
     - --v=0
-    # - --authorization-mode=RBAC                                   # Comment out until 1.8.x
+    - --authorization-mode=RBAC                                   # Comment out until 1.8.x
     # - --authorization-rbac-super-user=admin                       # Comment out until 1.8.x
     # - --feature-gates=AllAlpha=true,APIResponseCompression=false  # 1.8.4 has an issue with websockets, exec, logs -f don't work unless you uncomment this
     ports:
